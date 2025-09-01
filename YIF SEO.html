@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Platform Content Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --youtube: #FF0000;
+            --instagram: #E1306C;
+            --facebook: #4267B2;
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--youtube), var(--instagram), var(--facebook));
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .welcome-message {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            animation: fadeIn 1s ease;
+        }
+        
+        .welcome-message h2 {
+            color: #d63031;
+            margin-bottom: 10px;
+        }
+        
+        .platform-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .platform-btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .platform-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .platform-btn.youtube {
+            background: var(--youtube);
+            color: white;
+        }
+        
+        .platform-btn.instagram {
+            background: var(--instagram);
+            color: white;
+        }
+        
+        .platform-btn.facebook {
+            background: var(--facebook);
+            color: white;
+        }
+        
+        .platform-btn.active {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+        
+        .card.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background: var(--secondary);
+        }
+        
+        .output {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 150px;
+            margin-top: 15px;
+            white-space: pre-line;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tag {
+            background: #e0e0e0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .title-suggestion {
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .title-suggestion:hover {
+            background: #e0e0e0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--dark);
+            font-size: 14px;
+            padding: 20px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .platform-icon {
+            font-size: 24px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            color: var(--primary);
+            cursor: help;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .platform-selector {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-rocket"></i> Multi-Platform Content Generator</h1>
+            <p>Create engaging content for YouTube, Instagram, and Facebook</p>
+        </header>
+        
+        <div class="welcome-message">
+            <h2><i class="fas fa-gift"></i> Welcome Content Creator!</h2>
+            <p>We're excited to help you create amazing content for your social media platforms. Select a platform above to get started with generating titles, descriptions, and tags tailored for that platform.</p>
+        </div>
+        
+        <div class="platform-selector">
+            <button class="platform-btn youtube active" data-platform="youtube">
+                <i class="fab fa-youtube platform-icon"></i> YouTube
+            </button>
+            <button class="platform-btn instagram" data-platform="instagram">
+                <i class="fab fa-instagram platform-icon"></i> Instagram
+            </button>
+            <button class="platform-btn facebook" data-platform="facebook">
+                <i class="fab fa-facebook platform-icon"></i> Facebook
+            </button>
+        </div>
+        
+        <!-- YouTube Card -->
+        <div class="card active" id="youtube-card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fab fa-youtube"></i> YouTube Content Generator</h2>
+                <div class="tooltip">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltiptext">Generate titles, description and tags for YouTube videos</span>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="youtube-topic">Enter your video topic or idea:</label>
+                <input type="text" id="youtube-topic" placeholder="e.g., iPhone 15 review, cooking pasta, fitness tips">
+            </div>
+            
+            <button onclick="generateYouTubeContent()">
+                <i class="fas fa-bolt"></i> Generate YouTube Content
+            </button>
+            
+            <div class="title-suggestions" style="margin-top: 20px;">
+                <h3 class="card-title"><i class="fas fa-heading"></i> Title Suggestions</h3>
+                <div id="youtube-titles">
+                    <p>Your YouTube title suggestions will appear here after generating content.</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h3 class="card-title"><i class="fas fa-align-left"></i> Description</h3>
+                <div class="output" id="youtube-description">
+                    Your YouTube description will appear here after generating content.
+                </div>
+                <div class="action-buttons">
+                    <button onclick="copyToClipboard('youtube-description')">
+                        <i class="fas fa-copy"></i> Copy Description
+                    </button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h3 class="card-title"><i class="fas fa-tags"></i> YouTube Tags <span class="badge">For YouTube Studio</span></h3>
+                <div class="tags-container" id="youtube-tags">
+                    <span class="tag">youtube</span>
+                    <span class="tag">video</span>
+                    <span class="tag">content</span>
+                </div>
+                <div class="action-buttons">
+                    <button onclick="copyTags('youtube-tags')">
+                        <i class="fas fa-copy"></i> Copy Tags
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Instagram Card -->
+        <div class="card" id="instagram-card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fab fa-instagram"></i> Instagram Content Generator</h2>
+                <div class="tooltip">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltiptext">Generate captions and hashtags for Instagram posts</span>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="instagram-topic">Enter your post topic or idea:</label>
+                <input type="text" id="instagram-topic" placeholder="e.g., Beach sunset, morning coffee, workout routine">
+            </div>
+            
+            <button onclick="generateInstagramContent()">
+                <i class="fas fa-bolt"></i> Generate Instagram Content
+            </button>
+            
+            <div style="margin-top: 20px;">
+                <h3 class="card-title"><i class="fas fa-heading"></i> Caption</h3>
+                <div class="output" id="instagram-caption">
+                    Your Instagram caption will appear here after generating content.
+                </div>
+                <div class="action-buttons">
+                    <button onclick="copyToClipboard('instagram-caption')">
+                        <i class="fas fa-copy"></i> Copy Caption
+                    </button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h3 class="card-title"><i class="fas fa-hashtag"></i> Hashtags</h3>
+                <div class="tags-container" id="instagram-hashtags">
+                    <span class="tag">instagram</span>
+                    <span class="tag">photo</span>
+                    <span class="tag">social</span>
+                </div>
+                <div class="action-buttons">
+                    <button onclick="copyTags('instagram-hashtags')">
+                        <i class="fas fa-copy"></i> Copy Hashtags
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Facebook Card -->
+        <div class="card" id="facebook-card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fab fa-facebook"></i> Facebook Content Generator</h2>
+                <div class="tooltip">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltiptext">Generate posts and hashtags for Facebook</span>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="facebook-topic">Enter your post topic or idea:</label>
+                <input type="text" id="facebook-topic" placeholder="e.g., Family gathering, news article, product announcement">
+            </div>
+            
+            <button onclick="generateFacebookContent()">
+                <i class="fas fa-bolt"></i> Generate Facebook Content
+            </button>
+            
+            <div style="margin-top: 20px;">
+                <h3 class="card-title"><i class="fas fa-align-left"></i> Post Content</h3>
+                <div class="output" id="facebook-post">
+                    Your Facebook post will appear here after generating content.
+                </div>
+                <div class="action-buttons">
+                    <button onclick="copyToClipboard('facebook-post')">
+                        <i class="fas fa-copy"></i> Copy Post
+                    </button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h3 class="card-title"><i class="fas fa-hashtag"></i> Hashtags</h3>
+                <div class="tags-container" id="facebook-hashtags">
+                    <span class="tag">facebook</span>
+                    <span class="tag">post</span>
+                    <span class="tag">update</span>
+                </div>
+                <div class="action-buttons">
+                    <button onclick="copyTags('facebook-hashtags')">
+                        <i class="fas fa-copy"></i> Copy Hashtags
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Multi-Platform Content Generator Tool &copy; 2023 | Create engaging content for your social media channels</p>
+        </footer>
+    </div>
+
+    <script>
+        // Arrays of words for generating content
+        const powerWords = ['Amazing', 'Ultimate', 'Secret', 'Pro', 'Easy', 'Insane', 'Epic', 'Unbelievable', 'Fantastic', 'Incredible'];
+        const viralWords = ['Viral', 'Trending', 'Hacks', 'Tips', 'Tricks', 'Review', 'Challenge', 'Makeover', 'Revealed', 'Exposed'];
+        const emojis = ['🔥', '🚀', '💯', '🎯', '⭐', '💥', '👀', '👍', '🎉', '❤️'];
+        
+        // Platform-specific tags
+        const youtubeTags = ['youtube', 'video', 'content', 'subscribe', 'like', 'comment', 'watch', 'channel', 'upload', 'views', 'trending', 'viral', 'youtuber'];
+        const instagramTags = ['instagram', 'instagood', 'photo', 'photography', 'love', 'follow', 'like', 'social', 'style', 'instadaily', 'followme', 'photooftheday'];
+        const facebookTags = ['facebook', 'post', 'update', 'share', 'like', 'comment', 'follow', 'news', 'friends', 'family', 'social', 'network'];
+        
+        // Platform selection
+        document.querySelectorAll('.platform-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons and cards
+                document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Show corresponding card
+                const platform = this.getAttribute('data-platform');
+                document.getElementById(`${platform}-card`).classList.add('active');
+            });
+        });
+        
+        // Generate YouTube Content
+        function generateYouTubeContent() {
+            const topic = document.getElementById('youtube-topic').value.trim();
+            
+            if (!topic) {
+                alert('Please enter a video topic first!');
+                return;
+            }
+            
+            // Generate title suggestions
+            generateYouTubeTitles(topic);
+            
+            // Generate description
+            generateYouTubeDescription(topic);
+            
+            // Generate tags
+            generateYouTubeTags(topic);
+        }
+        
+        function generateYouTubeTitles(topic) {
+            const titleContainer = document.getElementById('youtube-titles');
+            titleContainer.innerHTML = '';
+            
+            // Create 3 title suggestions
+            for (let i = 0; i < 3; i++) {
+                const powerWord = powerWords[Math.floor(Math.random() * powerWords.length)];
+                const viralWord = viralWords[Math.floor(Math.random() * viralWords.length)];
+                const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                const title = `${powerWord} ${topic} ${viralWord} ${emoji}`;
+                
+                const titleElement = document.createElement('div');
+                titleElement.className = 'title-suggestion';
+                titleElement.innerHTML = `
+                    <h4>${title}</h4>
+                    <p>Click to copy this title</p>
+                `;
+                titleElement.onclick = function() {
+                    copyToClipboardText(title);
+                };
+                
+                titleContainer.appendChild(titleElement);
+            }
+        }
+        
+        function generateYouTubeDescription(topic) {
+            const descriptionOutput = document.getElementById('youtube-description');
+            
+            const views = Math.floor(Math.random() * 900000) + 100000;
+            const likes = Math.floor(Math.random() * 90000) + 10000;
+            
+            const description = `
+📌 IN THIS VIDEO:
+
+We're exploring ${topic} in detail! You'll learn everything you need to know about ${topic} and why it's trending right now.
+
+🔥 This ${topic} video has been viewed by over ${views.toLocaleString()} people and liked by ${likes.toLocaleString()} viewers!
+
+👍 LIKE, SHARE & SUBSCRIBE FOR MORE VIDEOS!
+
+If you enjoyed this video, please give it a thumbs up, share it with your friends, and subscribe to our channel for more content like this!
+
+🔔 Turn on notifications by clicking the BELL icon next to the subscribe button so you never miss our latest videos!
+
+📱 FOLLOW US ON SOCIAL MEDIA:
+
+Instagram: [Your Instagram Handle]
+Facebook: [Your Facebook Page]
+Twitter: [Your Twitter Handle]
+
+💬 COMMENT BELOW:
+
+What did you think of this ${topic} video? Let us know in the comments section below!
+
+⏰ VIDEO CHAPTERS:
+
+0:00 Introduction
+1:20 Main Content
+3:45 Key Points
+5:30 Conclusion
+6:15 Outro
+
+🎵 MUSIC USED:
+
+[Name of background music]
+
+⚠️ DISCLAIMER: This video is for educational and entertainment purposes only.
+            `;
+            
+            descriptionOutput.textContent = description;
+        }
+        
+        function generateYouTubeTags(topic) {
+            const tagsOutput = document.getElementById('youtube-tags');
+            tagsOutput.innerHTML = '';
+            
+            // Create tags array with topic-related tags and YouTube tags
+            const topicTags = topic.split(' ');
+            const allTags = [...new Set([...topicTags, ...youtubeTags])];
+            
+            // Display tags (maximum 15)
+            const displayTags = allTags.slice(0, 15);
+            
+            displayTags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.textContent = tag;
+                tagsOutput.appendChild(tagElement);
+            });
+        }
+        
+        // Generate Instagram Content
+        function generateInstagramContent() {
+            const topic = document.getElementById('instagram-topic').value.trim();
+            
+            if (!topic) {
+                alert('Please enter a post topic first!');
+                return;
+            }
+            
+            generateInstagramCaption(topic);
+            generateInstagramHashtags(topic);
+        }
+        
+        function generateInstagramCaption(topic) {
+            const captionOutput = document.getElementById('instagram-caption');
+            
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const powerWord = powerWords[Math.floor(Math.random() * powerWords.length)];
+            
+            const caption = `
+${emoji} ${powerWord} ${topic} ${emoji}
+
+Loving this ${topic} right now! What do you think? 
+
+👉 Double tap if you agree!
+👉 Follow for more ${topic} content!
+👉 Tag someone who needs to see this!
+
+#${topic.replace(/\s+/g, '')} #instagram #post
+
+📍 Location: [Your Location]
+            `;
+            
+            captionOutput.textContent = caption;
+        }
+        
+        function generateInstagramHashtags(topic) {
+            const hashtagsOutput = document.getElementById('instagram-hashtags');
+            hashtagsOutput.innerHTML = '';
+            
+            // Create tags array with topic-related tags and Instagram tags
+            const topicTags = topic.split(' ');
+            const allTags = [...new Set([...topicTags, ...instagramTags])];
+            
+            // Display tags (maximum 20)
+            const displayTags = allTags.slice(0, 20);
+            
+            displayTags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.textContent = `#${tag}`;
+                hashtagsOutput.appendChild(tagElement);
+            });
+        }
+        
+        // Generate Facebook Content
+        function generateFacebookContent() {
+            const topic = document.getElementById('facebook-topic').value.trim();
+            
+            if (!topic) {
+                alert('Please enter a post topic first!');
+                return;
+            }
+            
+            generateFacebookPost(topic);
+            generateFacebookHashtags(topic);
+        }
+        
+        function generateFacebookPost(topic) {
+            const postOutput = document.getElementById('facebook-post');
+            
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const powerWord = powerWords[Math.floor(Math.random() * powerWords.length)];
+            
+            const post = `
+${emoji} ${powerWord} ${topic} ${emoji}
+
+Just wanted to share my thoughts on ${topic}. What do you all think?
+
+👍 Like if you agree!
+💬 Comment below with your thoughts!
+↪️ Share with your friends!
+
+#${topic.replace(/\s+/g, '')} #facebook #update
+
+            `;
+            
+            postOutput.textContent = post;
+        }
+        
+        function generateFacebookHashtags(topic) {
+            const hashtagsOutput = document.getElementById('facebook-hashtags');
+            hashtagsOutput.innerHTML = '';
+            
+            // Create tags array with topic-related tags and Facebook tags
+            const topicTags = topic.split(' ');
+            const allTags = [...new Set([...topicTags, ...facebookTags])];
+            
+            // Display tags (maximum 15)
+            const displayTags = allTags.slice(0, 15);
+            
+            displayTags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.textContent = `#${tag}`;
+                hashtagsOutput.appendChild(tagElement);
+            });
+        }
+        
+        // Utility functions
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            copyToClipboardText(text);
+        }
+        
+        function copyToClipboardText(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            alert('Copied to clipboard!');
+        }
+        
+        function copyTags(elementId) {
+            const tags = Array.from(document.getElementById(elementId).querySelectorAll('.tag'))
+                .map(tag => tag.textContent)
+                .join(', ');
+                
+            copyToClipboardText(tags);
+        }
+        
+        // Show welcome message initially
+        setTimeout(() => {
+            document.querySelector('.welcome-message').style.display = 'block';
+        }, 500);
+    </script>
+</body>
+</html>
